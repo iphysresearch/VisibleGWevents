@@ -4,16 +4,30 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import h5py
+# import os
+import time
 
-
-# BBHs = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608', 
-#         'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
+BBHs = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608', 
+        'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
 
 # a_BBH =  np.random.choice(BBHs)
-# print('We will use ', a_BBH, 'as an example of a BBH')
-# BBH_file = './GWTC1/'+a_BBH+'_GWTC-1.hdf5'
-# BBH = h5py.File(BBH_file, 'r')
-# print('This file contains four datasets: ', [i for i in BBH.keys()])
+# a_BBH = 'GW150914'
+
+############## For a target GW event ###########
+
+a_BBH = st.sidebar.selectbox(      # Use a selectbox for options (on the sidebar)
+    'Which GW event do you like best?', BBHs)
+
+# option = st.selectbox(              # Use a selectbox for options (on the content)
+#     'Which number do you like best?',
+#      [i for i in BBH.keys()])
+
+
+print('We will use ', a_BBH, 'as an example of a BBH')
+BBH_file = './GWTC1/'+a_BBH+'_GWTC-1.hdf5'
+BBH = h5py.File(BBH_file, 'r')
+print('This file contains four datasets: ', [i for i in BBH.keys()])
+
 
 
 """
@@ -53,8 +67,19 @@ if st.checkbox('Show dataframe'):   # Use checkboxes to show/hide data
     st.line_chart(chart_data)
 
 
-option = st.selectbox(              # Use a selectbox for options
-    'Which number do you like best?',
-     df['first column'])
+# 'Starting a long computation...'
+# # Add a placeholder
+# latest_iteration = st.empty()
+# bar = st.progress(0)
+# for i in range(100):
+#   # Update the progress bar with each iteration.
+#   latest_iteration.text(f'Iteration {i+1}')
+#   bar.progress(i + 1)
+#   time.sleep(0.1)
+# '...and now we\'re done!'
 
-'You selected: ', option
+'For', a_BBH
+
+df_func = lambda name: pd.DataFrame(data = BBH[(name)].value)
+df = pd.DataFrame( [df_func(name).median(axis=0) for name in BBH.keys()], index=[name for name in BBH.keys()])
+st.write(df)
