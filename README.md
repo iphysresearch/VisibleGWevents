@@ -1,1 +1,7 @@
 # VisibleGWevents
+
+
+
+```shell
+pipreqs ./
+```

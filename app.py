@@ -6,14 +6,14 @@ import pandas as pd
 import h5py
 
 
-BBHs = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608', 
-        'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
+# BBHs = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608', 
+#         'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
 
-a_BBH =  np.random.choice(BBHs)
-print('We will use ', a_BBH, 'as an example of a BBH')
-BBH_file = './GWTC1/'+a_BBH+'_GWTC-1.hdf5'
-BBH = h5py.File(BBH_file, 'r')
-print('This file contains four datasets: ', [i for i in BBH.keys()])
+# a_BBH =  np.random.choice(BBHs)
+# print('We will use ', a_BBH, 'as an example of a BBH')
+# BBH_file = './GWTC1/'+a_BBH+'_GWTC-1.hdf5'
+# BBH = h5py.File(BBH_file, 'r')
+# print('This file contains four datasets: ', [i for i in BBH.keys()])
 
 
 """
@@ -37,3 +37,24 @@ df = pd.DataFrame({
 
 
 st.write(df)
+
+chart_data = pd.DataFrame(
+     np.random.randn(20, 3),
+     columns=['a', 'b', 'c'])
+
+st.line_chart(chart_data)
+
+
+if st.checkbox('Show dataframe'):   # Use checkboxes to show/hide data
+    chart_data = pd.DataFrame(
+       np.random.randn(20, 3),
+       columns=['a', 'b', 'c'])
+
+    st.line_chart(chart_data)
+
+
+option = st.selectbox(              # Use a selectbox for options
+    'Which number do you like best?',
+     df['first column'])
+
+'You selected: ', option
