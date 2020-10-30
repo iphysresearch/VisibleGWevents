@@ -83,3 +83,31 @@ if st.checkbox('Show dataframe'):   # Use checkboxes to show/hide data
 df_func = lambda name: pd.DataFrame(data = BBH[(name)].value)
 df = pd.DataFrame( [df_func(name).median(axis=0) for name in BBH.keys()], index=[name for name in BBH.keys()])
 st.write(df)
+
+
+
+
+
+"""
+---
+
+# O1 parameter estimation samples release
+
+This is v1.0 of the O1 parameter estimation samples release. This first release contains for the 3 
+events observed during the first observing run (O1) sets of points drawn from the posterior 
+probability distribution functions as described and used in the paper "Binary Black Hole Mergers 
+in the first Advanced LIGO Observing Run" (https://journals.aps.org/prx/abstract/10.1103/PhysRevX.6.041015). 
+This includes information on the two individual masses in the detector frame, the luminosity distance, 
+inclination angle, sky location, geocenter GPS time, spin magnitudes and tilt angles. 
+The O2 CBC catalog release is expected to include an update of this release.
+
+Here we have packaged each event's data into .h5 files, which contain data for SEOBNR, 
+IMRPP, and Overall waveform models.
+
+The provided IPython notebook reads in the event samples and makes some example plots.
+
+Note -- The spin parameters are given at the gravitational-wave frequency f = 20 Hz
+
+>The data used in these tutorials can be downloaded from the public 
+DCC page [LIGO-T1800235-v14](https://dcc.ligo.org/LIGO-T1800235/public).
+"""
