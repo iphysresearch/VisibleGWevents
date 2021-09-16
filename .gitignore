@@ -1,3 +1,12 @@
+1-ogc/
+2-ogc/
+3-ogc/
+Bilby-GWTC-1-Analysis-and-Verification/
+GWTC1/
+GWTC2_O3a/
+O1/
+Cumulative_Event_Rate_Plot/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

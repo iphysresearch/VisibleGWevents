@@ -6,27 +6,45 @@ import pandas as pd
 import h5py
 # import os
 import time
-
-BBHs = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608', 
-        'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
+import os
 
 # a_BBH =  np.random.choice(BBHs)
 # a_BBH = 'GW150914'
 
-############## For a target GW event ###########
+############## For a target GW event category ###########
+file_list = ['O1', 'GWTC1'][::-1]
 
-a_BBH = st.sidebar.selectbox(      # Use a selectbox for options (on the sidebar)
-    'Which GW event do you like best?', BBHs)
+file = st.sidebar.selectbox(      # Use a selectbox for options (on the sidebar)
+    'Which GW event category do you like best?', file_list)
+
+############## For a target GW event ###########
+if file == 'GWTC1':
+    CBCs = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608', 
+            'GW170729', 'GW170809', 'GW170814', 'GW170817', 'GW170818', 'GW170823']
+elif file == 'O1':
+    CBCs = ['GW150914', 'LVT151012', 'GW151226']
+else:
+	pass
+
+a_CBC = st.sidebar.selectbox(      # Use a selectbox for options (on the sidebar)
+    'Which GW event do you like best?', CBCs)
+print('We will use ', a_CBC, 'as an example of a CBC event')
+
+CBC_name = [f for f in os.listdir(os.path.join('.', file)) if ('.hdf5' in f) or ('.h5' in f) if a_CBC in f]
+assert len(CBC_name) == 1
+BBH_file = os.path.join('.', file, CBC_name[0])
+BBH = h5py.File(BBH_file, 'r')
+print('This file contains four datasets: ', [i for i in BBH.keys()])
+
 
 # option = st.selectbox(              # Use a selectbox for options (on the content)
 #     'Which number do you like best?',
 #      [i for i in BBH.keys()])
 
 
-print('We will use ', a_BBH, 'as an example of a BBH')
-BBH_file = './GWTC1/'+a_BBH+'_GWTC-1.hdf5'
-BBH = h5py.File(BBH_file, 'r')
-print('This file contains four datasets: ', [i for i in BBH.keys()])
+
+
+
 
 
 
@@ -78,14 +96,18 @@ if st.checkbox('Show dataframe'):   # Use checkboxes to show/hide data
 #   time.sleep(0.1)
 # '...and now we\'re done!'
 
-'For', a_BBH
+'For', a_CBC
 
 df_func = lambda name: pd.DataFrame(data = BBH[(name)].value)
 df = pd.DataFrame( [df_func(name).median(axis=0) for name in BBH.keys()], index=[name for name in BBH.keys()])
 st.write(df)
 
 
-
+###### 
+url = r'https://www.gw-openscience.org/eventapi/csv/GWTC-1-confident/'
+df = pd.read_csv(url)
+# df.set_index('id', inplace=True)
+st.write(df)
 
 
 """
