@@ -6,6 +6,9 @@ GWTC1/
 GWTC2_O3a/
 O1/
 Cumulative_Event_Rate_Plot/
+O1_H1_LOSC_16_V1_1ogc-1500-seed0/
+O1_L1_LOSC_16_V1_1ogc-1500-seed0/
+GWTC1_triggers/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
