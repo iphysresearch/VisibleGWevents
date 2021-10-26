@@ -9,6 +9,8 @@ Cumulative_Event_Rate_Plot/
 O1_H1_LOSC_16_V1_1ogc-1500-seed0/
 O1_L1_LOSC_16_V1_1ogc-1500-seed0/
 GWTC1_triggers/
+streamlit-visiblegwevents-firebase-adminsdk-p25un-af6ce7d332.json
+secrets.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
