@@ -4,31 +4,31 @@ channels:
   - defaults
 dependencies:
   - python=3.8
-  - streamlit
+  - streamlit=1.1.0
   - numpy
   - scipy
   - matplotlib
-  - scikit-learn
+  # - scikit-learn
   - corner
   - h5py
-  - jupyterlab
+  # - jupyterlab
   - ipython
   - pip
   - pandas
   - tqdm
-  - ligo.skymap
-  - bilby
-  - astropy
-  - gwosc
-  - gwpy
+  # - ligo.skymap
+  # - bilby
+  # - astropy
+  # - gwosc
+  # - gwpy
   - pip:
-    - jupyterlab-unfold
+    # - jupyterlab-unfold
     - -e .  # install package in development mode
     - simple-parsing
     - firebase-admin
     - tables
     - plotly
-    - jupyterlab>=3
-    - notebook>=5.3
-    - ipywidgets>=7.6
-    - jupyter-dash
+    # - jupyterlab>=3
+    # - notebook>=5.3
+    # - ipywidgets>=7.6
+    # - jupyter-dash
