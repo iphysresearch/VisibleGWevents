@@ -2,4 +2,8 @@ pandas==0.24.2
 numpy==1.16.4
 h5py==2.9.0
 streamlit==1.1.0
+scipy
 plotly==5.3.1
+matplotlib
+corner
+h5py

@@ -1,10 +1,9 @@
-name: visible_gw_events
+name: visible_gw_events_streamlit
 channels:
   - conda-forge
   - defaults
 dependencies:
   - python=3.8
-  - streamlit=1.1.0
   - numpy
   - scipy
   - matplotlib
@@ -14,7 +13,8 @@ dependencies:
   - pip
   - pandas
   - tqdm
+  - streamlit
+  - plotly
   - pip:
     - simple-parsing
     - firebase-admin
-    - plotly
