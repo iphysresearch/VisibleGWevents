@@ -12,6 +12,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 import matplotlib.pyplot as plt
 
+# Ref:
+# https://blog.streamlit.io/streamlit-firestore/
+# https://console.firebase.google.com/project/streamlit-visiblegwevents/storage/streamlit-visiblegwevents.appspot.com/files?pli=1
+
 
 st.set_page_config(
     page_title="Ex-stream-ly Cool App",
