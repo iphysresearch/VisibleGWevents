@@ -104,18 +104,22 @@ def convert_df(df):
 
 OGC_selected = st.sidebar.selectbox(
     "How would you like to be contacted?",
-    ("1-OGC", "2-OGC", "3-OGC")
+    ("1-OGC", "2-OGC", "3-OGC_low", "3-OGC_high", "4-OGC")
 )
 
 filename = {
     "1-OGC": '1-ogc/1-OGC.hdf',
     "2-OGC": '2-ogc/2-OGC.hdf',
-    "3-OGC": '3-ogc/3-OGC.hdf',
+    "3-OGC_low": '3-ogc/3-OGC_low.hdf',
+    "3-OGC_high": '3-ogc/3-OGC_high.hdf',
+    "4-OGC": '4-ogc/search/4-OGC_small.hdf',
 }
 data_range = {
     "1-OGC": 'O1',
     "2-OGC": 'O1+O2',
-    "3-OGC": 'O1+O2+O3',
+    "3-OGC_low": 'O1+O2+O3_low',
+    "3-OGC_high": 'O1+O2+O3_high',
+    "4-OGC": 'O1+O2+O3a+O3b',
 }
 st.title(OGC_selected)
 
@@ -136,16 +140,26 @@ if OGC_selected=='1-OGC':
 elif OGC_selected=='2-OGC':
     st.write('https://github.com/gwastro/2-ogc')  # TODO
     st.write('https://arxiv.org/pdf/1910.05331.pdf')  # TODO
+elif (OGC_selected=='3-OGC_low') or (OGC_selected=='3-OGC_high'):
+    st.write('https://github.com/gwastro/3-ogc')  # TODO
+    st.write('https://arxiv.org/pdf/2105.09151.pdf')  # TODO
+elif (OGC_selected=='4-OGC'):
+    st.write('https://github.com/gwastro/4-ogc')  # TODO
+    st.write('https://arxiv.org/pdf/2112.06878.pdf')  # TODO
+    
+if (OGC_selected=='1-OGC') or (OGC_selected=='2-OGC'):
+    # Get a numpy structured array of the candidate event properties.
+    catalog_radio = st.radio(
+        'Get dataset based on the candidate event properties:',
+        ('complete', 'bbh'))
+    catalog_desc = {
+        'complete': 'compact binary mergers',
+        'bbh': 'binary black holes',
+    }
+    candidates = catalog[catalog_radio]
+elif (OGC_selected=='3-OGC_low') or (OGC_selected=='3-OGC_high') or (OGC_selected=='4-OGC'):
+    candidates = pd.DataFrame({k:catalog[k][:] for k in catalog.keys()})
 
-# Get a numpy structured array of the candidate event properties.
-catalog_radio = st.radio(
-    'Get dataset based on the candidate event properties:',
-    ('complete', 'bbh'))
-catalog_desc = {
-    'complete': 'compact binary mergers',
-    'bbh': 'binary black holes',
-}
-candidates = catalog[catalog_radio]
 
 with st.expander("See explanation"):
     st.write(f"The `complete` set is the full dataset from {OGC_selected}. The `bbh` set includes BBH candidates from a select portion of {OGC_selected}.",)
@@ -205,16 +219,67 @@ with st.expander("See explanation"):
         |---------------|-------------------------------------------------------------------------------------------------------------------------------------|
         | pastro |     The probability that this BBH candidate is of astrophysical origin.                                        |
         ''')
+    elif (OGC_selected=='3-OGC_low') or (OGC_selected=='3-OGC_high'):
+        st.markdown('''
+        Both datasets are structured arrays which have the following named columns. Some of these columns give information specific to either the 
+        LIGO Hanford, LIGO Livingston or Virgo detectors. Where this is the case, the name of the column is prefixed with either a `H1`, `L1`, or 'V1'.
+
+        Note: For template parameters and statistics, we report the values associated with the candidate at a given time with the lowest false alarm rate. The search
+        can report many candidates for a common single source due to the overlap between its many template waveforms, hence the parameters don't indicate the only template which identified a particular signal.
+
+        | Key           | Description                                                                                                                         |
+        |---------------|-------------------------------------------------------------------------------------------------------------------------------------|
+        | name          | The designation of the candidate event. This is of the form 150812_122304 ('GW is not prefixed even to confident mergers').                                                     |
+        | IFAR           | The rate of false alarms with a ranking statistic as large or larger than this event. The unit is yr^-1.                                                                                                           |
+        | stat          | The value of the ranking statistic for this candidate event.                                                                                       |
+        | mass1         | The component mass of one compact object in the template waveform which found this candidate. Units in detector frame solar masses. |
+        | mass2         | The component mass of the template waveform which found this candidate. Units in detector frame solar masses.                       |
+        | spin1z        | The dimensionless spin of one of the compact objects for the template waveform which found this candidate.                                                                                                                                  |
+        | spin2z        | The dimensionless spin of one of the compact objects for the template waveform which found this candidate.                                                                                                                                    |
+        | {H1/L1/V1}_end_time   | The time in GPS seconds when a fiducial point in the signal passes throught the detector. Typically this is near the time of merger.                                                                                                                              |                                                                                                                           |
+        | {H1/L1/V1}_snr        | The amplitude of the complex matched filter signal-to-noise observed.                                                                                                                                    |                                                      |
+        | {H1/L1/V1}_chisq |  Value of the signal consistency test defined in this [paper](https://arxiv.org/abs/gr-qc/0405045). This is not calculated for all candidate events. In this case a value of 0 is substituted.                                                                                                                                  |
+        | {H1/L1/V1}_sg_chisq      |  Value of the signal consistency test defined in this [paper](https://arxiv.org/abs/1709.08974). This is not calculated for all candidate events. In this case a value of 1 is substituted.                                                                                                                     |
+        | pastro |     The probability that this BBH candidate is of astrophysical origin.                                        |
+        ''')
+    elif (OGC_selected=='4-OGC'):
+        st.markdown('''
+            The datasets are structured arrays which have the following named columns. Some of these columns give information specific to either the 
+            LIGO Hanford, LIGO Livingston or Virgo detectors. Where this is the case, the name of the column is prefixed with either a `H1`, `L1`, or 'V1'.
+
+            Note: For template parameters and statistics, we report the values associated with the candidate at a given time with the lowest false alarm rate. The search
+            can report many candidates for a common single source due to the overlap between its many template waveforms, hence the parameters don't indicate the only template which identified a particular signal.
+
+            | Key           | Description                                                                                                                         |
+            |---------------|-------------------------------------------------------------------------------------------------------------------------------------|
+            | name          | The designation of the candidate event. This is of the form 150812_122304 ('GW is not prefixed even to confident mergers').                                                     |
+            | IFAR           | The rate of false alarms with a ranking statistic as large or larger than this event. The unit is yr^-1.                                                                                                           |
+            | stat          | The value of the ranking statistic for this candidate event.                                                                                       |
+            | mass1         | The component mass of one compact object in the template waveform which found this candidate. Units in detector frame solar masses. |
+            | mass2         | The component mass of the template waveform which found this candidate. Units in detector frame solar masses.                       |
+            | spin1z        | The dimensionless spin of one of the compact objects for the template waveform which found this candidate.                                                                                                                                  |
+            | spin2z        | The dimensionless spin of one of the compact objects for the template waveform which found this candidate.                                                                                                                                    |
+            | {H1/L1/V1}_end_time   | The time in GPS seconds when a fiducial point in the signal passes throught the detector. Typically this is near the time of merger.                                                                                                                              |                                                                                                                           |
+            | {H1/L1/V1}_snr        | The amplitude of the complex matched filter signal-to-noise observed.                                                                                                                                    |                                                      |
+            | {H1/L1/V1}_chisq |  Value of the signal consistency test defined in this [paper](https://arxiv.org/abs/gr-qc/0405045). This is not calculated for all candidate events. In this case a value of 0 is substituted.                                                                                                                                  |
+            | {H1/L1/V1}_sg_chisq      |  Value of the signal consistency test defined in this [paper](https://arxiv.org/abs/1709.08974). This is not calculated for all candidate events. In this case a value of 1 is substituted.                                                                                                                     |
+            | pastro |     The probability that this BBH candidate is of astrophysical origin.                                        |
+        ''')
 
 if OGC_selected=='1-OGC':
     df = pd.DataFrame(np.asarray(candidates))
+    df["FAR^{-1}"] = df.far.map(lambda x: 1/x)
 elif OGC_selected=='2-OGC':
     df = pd.DataFrame(dict(candidates))
     df['V1_GPS_time'] = df.V1_end_time.map(lambda x: str(x))
+    df["FAR^{-1}"] = df.far.map(lambda x: 1/x)
+elif (OGC_selected=='3-OGC_low') or (OGC_selected=='3-OGC_high') or (OGC_selected=='4-OGC'):
+    df = candidates
+    df['V1_GPS_time'] = df.V1_end_time.map(lambda x: str(x))
+    df["FAR^{-1}"] = df.ifar
 
-df["FAR^{-1}"] = df.far.map(lambda x: 1/x)
 df["Designation"] = df.name.map(lambda x: x.decode())
-df['snr_network'] = np.sqrt(df.H1_snr ** 2 + df.L1_snr ** 2 + (0 if OGC_selected=='1-OGC' else df.V1_snr))
+df['snr_network'] = np.sqrt(df.H1_snr ** 2 + df.L1_snr ** 2 + (0 if OGC_selected=='1-OGC' else df.V1_snr**2))
 df['chi_eff'] = (df.spin1z * df.mass1 + df.spin2z * df.mass2) / (df.mass1 + df.mass2)
 df['H1_GPS_time'] = df.H1_end_time.map(lambda x: str(x))
 df['L1_GPS_time'] = df.L1_end_time.map(lambda x: str(x))
@@ -231,25 +296,46 @@ with st.container():
 
 st.write('---')
 st.header('Table')
-st.write(f'Candidate events from the full search for {catalog_desc[catalog_radio]} in {data_range[OGC_selected]} data.')
-num_head = st.select_slider(
-    'Select the number of candidates sorted by FAR:',
-    options=[10, 20, 50, 100, 500, 1000, None],
-    value=20)
-dddf = df.sort_values('far', ascending=True)[['Designation'] + (['jd'] if OGC_selected == '1-OGC' else [])
-                                              +['far', "FAR^{-1}", 'stat', 
-                                              'snr_network', 'H1_snr', 'L1_snr',] + ([] if OGC_selected == '1-OGC' else ['V1_snr'])
-                                              + ['H1_GPS_time', 'L1_GPS_time'] + ([] if OGC_selected == '1-OGC' else ['V1_GPS_time'])
-                                              + ['mass1', 'mass2', 'chi_eff']
-                                              + (['pastro'] if catalog_radio == 'bbh' else [])
-                                              + (['tdr'] if (OGC_selected == '1-OGC') and (catalog_radio=='bbh') else [])].set_index('Designation').head(num_head)
-st.dataframe(dddf)
-st.download_button(
-    label="Download data as CSV",
-    data=convert_df(dddf),
-    file_name=f'{OGC_selected}_{catalog_radio}_head{num_head}.csv',
-    mime='text/csv',
-)
+if (OGC_selected=='1-OGC') or (OGC_selected=='2-OGC'):
+    st.write(f'Candidate events from the full search for {catalog_desc[catalog_radio]} in {data_range[OGC_selected]} data.')
+    num_head = st.select_slider(
+        'Select the number of candidates sorted by FAR:',
+        options=[10, 20, 50, 100, 500, 1000, None],
+        value=20)
+    dddf = df.sort_values('far', ascending=True)[['Designation'] + (['jd'] if OGC_selected == '1-OGC' else [])
+                                                +['far', "FAR^{-1}", 'stat', 
+                                                'snr_network', 'H1_snr', 'L1_snr',] + ([] if OGC_selected == '1-OGC' else ['V1_snr'])
+                                                + ['H1_GPS_time', 'L1_GPS_time'] + ([] if OGC_selected == '1-OGC' else ['V1_GPS_time'])
+                                                + ['mass1', 'mass2', 'chi_eff']
+                                                + (['pastro'] if catalog_radio == 'bbh' else [])
+                                                + (['tdr'] if (OGC_selected == '1-OGC') and (catalog_radio=='bbh') else [])].set_index('Designation').head(num_head)
+    st.dataframe(dddf)
+    st.download_button(
+        label="Download data as CSV",
+        data=convert_df(dddf),
+        file_name=f'{OGC_selected}_{catalog_radio}_head{num_head}.csv',
+        mime='text/csv',
+    )
+elif (OGC_selected=='3-OGC_low') or (OGC_selected=='3-OGC_high') or (OGC_selected=='4-OGC'):
+    st.write(f'Candidate events from the full search in {data_range[OGC_selected]} data.')
+    num_head = st.select_slider(
+        'Select the number of candidates sorted by FAR:',
+        options=[10, 20, 50, 100, 500, 1000, None],
+        value=20)
+    dddf = df.sort_values("FAR^{-1}", ascending=False)[['Designation']
+                                                +["FAR^{-1}", 'stat', 
+                                                'snr_network', 'H1_snr', 'L1_snr','V1_snr']
+                                                + ['H1_GPS_time', 'L1_GPS_time', 'V1_GPS_time']
+                                                + ['mass1', 'mass2', 'chi_eff']
+                                                + ['pastro']].set_index('Designation').head(num_head)
+
+    st.dataframe(dddf)
+    st.download_button(
+        label="Download data as CSV",
+        data=convert_df(dddf),
+        file_name=f'{OGC_selected}_head{num_head}.csv',
+        mime='text/csv',
+    )
 
 
 st.write('---')
